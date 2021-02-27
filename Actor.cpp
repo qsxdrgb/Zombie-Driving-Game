@@ -23,7 +23,6 @@ BorderLine::BorderLine(StudentWorld* sw, int imageID, double x, double y, bool i
 void BorderLine::doSomething()
 {
 	moveDependents(0);
-
 }
 
 Agent::Agent(StudentWorld* sw, int imageID, double x, double y, int dir, double size, int hp)
@@ -61,14 +60,14 @@ void GhostRacer::doSomething()
 	if (isDead())
 		return;
 
-	if (getX() < LEFT_EDGE)
+	if (getX() < LEFT_EDGE) //If ghost racer is left of the road:
 	{
 		setDirection(82);
 		world()->playSound(SOUND_VEHICLE_CRASH);
 		takeDamageAndPossiblyDie(10);
 	}
 
-	if (getX() > RIGHT_EDGE)
+	if (getX() > RIGHT_EDGE) //If ghost racer is right of the road:
 	{
 		setDirection(98);
 		world()->playSound(SOUND_VEHICLE_CRASH);
@@ -118,6 +117,7 @@ void GhostRacer::doSomething()
 
 void GhostRacer::spin()
 {
+	//Randomize degree and sign
 	int randomDegree = randInt(5, 20);
 	int randomSign = randInt(1, 2);
 
@@ -160,7 +160,7 @@ void ZombieCab::doSomething()
 	if (isDead())
 		return;
 
-	if (doesOverlap(world()->getRacerPTR()))
+	if (doesOverlap(world()->getRacerPTR())) //If the cab overlaps with the racer, collide, etc.
 	{
 		if (!hasDamagedRacer)
 		{
@@ -184,7 +184,7 @@ void ZombieCab::doSomething()
 	
 	bool front = false;
 	bool back = false;
-	world()->checkCollision(this, front, back);
+	world()->checkCollision(this, front, back); //Check for actors in front and behind the cab
 
 	if (getVspeed() > world()->getRacerPTR()->getVspeed() && front)
 	{
@@ -213,7 +213,7 @@ bool ZombieCab::beSprayedIfAppropriate()
 	{
 		int randomInteger = randInt(1, 5);
 		if (randomInteger == 1)
-			world()->addActor(new OilSlick(world(), getX(), getY()));
+			world()->addActor(new OilSlick(world(), getX(), getY())); //Chance of adding an oil slick on death
 	}
 	return true;
 }
@@ -262,7 +262,7 @@ void HumanPedestrian::doSomething()
 	if (isDead())
 		return;
 
-	if (doesOverlap(world()->getRacerPTR()))
+	if (doesOverlap(world()->getRacerPTR())) //Tell StudentWorld a human has been hit if it overlaps with the racer
 	{
 		world()->setHitHumanPed();
 		return;
@@ -308,7 +308,7 @@ void ZombiePedestrian::doSomething()
 	double xDistToGr = getX() - world()->getRacerPTR()->getX();
 	double yDistToGr = getY() - world()->getRacerPTR()->getY();
 	
-	if (abs(xDistToGr) < 30 && yDistToGr > 0)
+	if (abs(xDistToGr) < 30 && yDistToGr > 0) //If the zombie ped is close enough to the racer, attack 
 	{
 		setDirection(270);
 		if (xDistToGr < 0)
@@ -334,7 +334,7 @@ bool ZombiePedestrian::beSprayedIfAppropriate()
 	int randomInteger = randInt(1, 5);
 	takeDamageAndPossiblyDie(1);
 
-	if (isDead() && !doesOverlap(world()->getRacerPTR()))
+	if (isDead() && !doesOverlap(world()->getRacerPTR())) //Chance of adding a new healing goodie if it doesn't overlap with the racer
 	{
 		if (randomInteger == 1)
 			world()->addActor(new HealingGoodie(world(), getX(), getY()));
@@ -354,7 +354,7 @@ void Spray::doSomething()
 	if (isDead())
 		return;
 
-	if (world()->doSprayEffects(this))
+	if (world()->doSprayEffects(this)) //Check if it overlaps with a collision actor
 	{
 		setDead();
 		return;
@@ -380,7 +380,7 @@ bool GhostRacerActivatedObject::beSprayedIfAppropriate()
 		return false;
 	else
 	{
-		setDead();
+		setDead(); //Kill objects that are sprayable
 		return true;
 	}
 }
@@ -398,8 +398,7 @@ OilSlick::OilSlick(StudentWorld* sw, double x, double y)
 }
 
 void OilSlick::doActivity(GhostRacer* gr)
-{
-	
+{	
 	if (doesOverlap(gr))
 	{
 		world()->playSound(SOUND_OIL_SLICK);
@@ -457,7 +456,7 @@ void SoulGoodie::doActivity(GhostRacer* gr)
 	setDirection(getDirection() - 10);
 }
 
-void Actor::moveDependents(double hspeed)
+void Actor::moveDependents(double hspeed) //Moves actors dependent on ghost racer's speed
 {
 	double vert_speed = getVspeed() - (world()->getRacerPTR()->getVspeed());
 	double horiz_speed = hspeed;

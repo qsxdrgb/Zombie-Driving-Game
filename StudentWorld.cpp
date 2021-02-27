@@ -60,7 +60,7 @@ int StudentWorld::move()
 
     if (theGhostRacer->isDead())
     {
-        //playSound(SOUND_PLAYER_DIE);
+        playSound(SOUND_PLAYER_DIE);
         decLives();
         return GWSTATUS_PLAYER_DIED;
     } 
@@ -72,7 +72,7 @@ int StudentWorld::move()
         return GWSTATUS_PLAYER_DIED;
     }
 
-    if (soulsToSave == 0)
+    if (soulsToSave == 0) 
     {
         increaseScore(m_bonusPTS);
         return GWSTATUS_FINISHED_LEVEL;
@@ -155,8 +155,8 @@ int StudentWorld::move()
 
     if (shouldAddActor(0, ChanceZombiePed))
         addActor(new ZombiePedestrian(this, randInt(0, VIEW_WIDTH), VIEW_HEIGHT));
-    //Add zombie cabs
 
+    //Add zombie cabs
     int ChanceVehicle = max(100 - getLevel() * 10, 20);
     if (shouldAddActor(0, ChanceVehicle))
         shouldAddZombCab();
@@ -178,6 +178,7 @@ int StudentWorld::move()
 ***********************************************************/
 void StudentWorld::cleanUp()
 {   
+    //Destruct actors
     while (allActors.size() != 0)
     {
         delete (allActors.back());
@@ -186,6 +187,13 @@ void StudentWorld::cleanUp()
     delete theGhostRacer;   
 }
 
+StudentWorld::~StudentWorld()
+{
+    cleanUp();
+}
+/******************
+* HELPER FUNCTIONS
+********************/
 bool StudentWorld::shouldAddActor(int randParaOne, int randParaTwo)
 {
     if (randInt(randParaOne, randParaTwo) == 0)
@@ -197,16 +205,15 @@ bool StudentWorld::shouldAddActor(int randParaOne, int randParaTwo)
 void StudentWorld::shouldAddZombCab()
 {
     bool flag = false;
-    //1 == left , 2 == mid, 3 == right
-    unordered_set<int> randomizer;
-
+   
+    unordered_set<int> randomizer;   
     while (randomizer.size() < 3)
     {
-        randomizer.insert(randInt(1, 3));
+        randomizer.insert(randInt(1, 3)); //1 == left lane , 2 == mid lane, 3 == right lane
     }
 
     unordered_set<int>::iterator it = randomizer.begin();
-    while (it != randomizer.end())
+    while (it != randomizer.end()) //Loop through the set and try to add cabs: break out of the loop if a cab was successfully added
     { 
         switch (*it)
         {
@@ -232,6 +239,7 @@ void StudentWorld::shouldAddZombCab()
 
 bool StudentWorld::doSprayEffects(Actor* spray)
 {
+    //If the spray overlaps with an actor, call it's beSprayed function
     for (int i = 0; i < allActors.size(); i++)
     {
         if (doesOverlap(allActors[i], spray))
@@ -259,9 +267,9 @@ bool StudentWorld::addCab(int leftSide, int middle, int rightSide)
 {
     bool hasAddedInLane = false;
 
-    double minY = VIEW_HEIGHT / 3;
+    double minY = VIEW_HEIGHT / 3; //Actors above this don't matter for adding cabs at the bottom
 
-    for (int i = 0; i < allActors.size(); i++)
+    for (int i = 0; i < allActors.size(); i++) //Loop through and find any collision actors that are below minY
     {
         if (allActors[i]->isCollisionAvoidanceWorthy() && allActors[i]->getX() > leftSide && allActors[i]->getX() < rightSide)
         {
@@ -272,7 +280,7 @@ bool StudentWorld::addCab(int leftSide, int middle, int rightSide)
     if (theGhostRacer->getX() > leftSide && theGhostRacer->getX() < rightSide)
         minY = theGhostRacer->getY();
 
-    if (minY >= VIEW_HEIGHT / 3)
+    if (minY >= VIEW_HEIGHT / 3) //If there are no actors below minY, add a cab
     {
         hasAddedInLane = true;
         addActor(new ZombieCab(this, middle, SPRITE_HEIGHT / 2, randInt(2, 4)));
@@ -281,7 +289,7 @@ bool StudentWorld::addCab(int leftSide, int middle, int rightSide)
     if (hasAddedInLane)
         return true;
 
-    double maxY = VIEW_HEIGHT * 2 / 3;
+    double maxY = VIEW_HEIGHT * 2 / 3; //Actors below this don't matter for adding cabs at the top
 
     for (int i = 0; i < allActors.size(); i++)
     {
@@ -307,11 +315,11 @@ void StudentWorld::checkCollision(Actor* cab, bool& front, bool& back)
 
     for (int i = 0; i < allActors.size(); i++)
     {
-        if (actorInWhichLane(allActors[i]) == laneToCheck && allActors[i]->isCollisionAvoidanceWorthy())
+        if (actorInWhichLane(allActors[i]) == laneToCheck && allActors[i]->isCollisionAvoidanceWorthy()) //Find collision actors in same lane as cab
         {
-            if (allActors[i]->getY() - cab->getY() > 0 && allActors[i]->getY() - cab->getY() < 96)
+            if (allActors[i]->getY() - cab->getY() > 0 && allActors[i]->getY() - cab->getY() < 96) //Is there a collision actor < 96 px in front?
                 front = true;
-            if (cab->getY() - allActors[i]->getY() > 0 && cab->getY() - allActors[i]->getY() < 96)
+            if (cab->getY() - allActors[i]->getY() > 0 && cab->getY() - allActors[i]->getY() < 96) //Is there a collision actor < 96 px in back?
                 back = true;
         }
     }
@@ -329,7 +337,4 @@ int StudentWorld::actorInWhichLane(Actor* object)
 }
 
 
-StudentWorld::~StudentWorld()
-{
-    cleanUp();
-}
+
