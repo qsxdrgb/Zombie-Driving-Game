@@ -24,7 +24,7 @@ public:
     virtual int move();
     virtual void cleanUp();
     virtual ~StudentWorld();
-    virtual GhostRacer* getRacerPTR() const { return theGhostRacer; }
+    GhostRacer* getRacerPTR() const { return theGhostRacer; }
     void setHitHumanPed() { hitHumanPed = true; }
     void decSoulsToSave() { soulsToSave--; }
     bool doSprayEffects(Actor* spray);
