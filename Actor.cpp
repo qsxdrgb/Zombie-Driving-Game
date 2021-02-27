@@ -79,12 +79,12 @@ void GhostRacer::doSomething()
 	{
 		switch (ch)
 		{
-		case KEY_PRESS_SPACE:
+		case KEY_PRESS_SPACE: //Holy water
 			if (getNumSprays() > 0)
 			{
 				double delta_y;
 				double delta_x;
-				getPositionInThisDirection(getDirection(), SPRITE_HEIGHT, delta_x, delta_y);
+				getPositionInThisDirection(getDirection(), SPRITE_HEIGHT, delta_x, delta_y); //Find pos and direction that holy water should start in
 				world()->addActor(new Spray(world(), delta_x, delta_y, getDirection()));
 				setSprays(getNumSprays() - 1);
 				world()->playSound(SOUND_PLAYER_SPRAY);
@@ -160,7 +160,7 @@ void ZombieCab::doSomething()
 	if (isDead())
 		return;
 
-	if (doesOverlap(world()->getRacerPTR())) //If the cab overlaps with the racer, collide, etc.
+	if (world()->doesOverlap(this,world()->getRacerPTR())) //If the cab overlaps with the racer, collide, etc.
 	{
 		if (!hasDamagedRacer)
 		{
@@ -262,7 +262,7 @@ void HumanPedestrian::doSomething()
 	if (isDead())
 		return;
 
-	if (doesOverlap(world()->getRacerPTR())) //Tell StudentWorld a human has been hit if it overlaps with the racer
+	if (world()->doesOverlap(this,world()->getRacerPTR())) //Tell StudentWorld a human has been hit if it overlaps with the racer
 	{
 		world()->setHitHumanPed();
 		return;
@@ -298,7 +298,7 @@ void ZombiePedestrian::doSomething()
 	if (isDead())
 		return;
 
-	if (doesOverlap(world()->getRacerPTR()))
+	if (world()->doesOverlap(this,world()->getRacerPTR()))
 	{
 		world()->getRacerPTR()->takeDamageAndPossiblyDie(5);
 		takeDamageAndPossiblyDie(2);
@@ -334,7 +334,7 @@ bool ZombiePedestrian::beSprayedIfAppropriate()
 	int randomInteger = randInt(1, 5);
 	takeDamageAndPossiblyDie(1);
 
-	if (isDead() && !doesOverlap(world()->getRacerPTR())) //Chance of adding a new healing goodie if it doesn't overlap with the racer
+	if (isDead() && !(world()->doesOverlap(this, world()->getRacerPTR()))) //Chance of adding a new healing goodie if it doesn't overlap with the racer
 	{
 		if (randomInteger == 1)
 			world()->addActor(new HealingGoodie(world(), getX(), getY()));
@@ -399,7 +399,7 @@ OilSlick::OilSlick(StudentWorld* sw, double x, double y)
 
 void OilSlick::doActivity(GhostRacer* gr)
 {	
-	if (doesOverlap(gr))
+	if (world()->doesOverlap(this, gr))
 	{
 		world()->playSound(SOUND_OIL_SLICK);
 		gr->spin();
@@ -413,7 +413,7 @@ HealingGoodie::HealingGoodie(StudentWorld* sw, double x, double y)
 
 void HealingGoodie::doActivity(GhostRacer* gr)
 {
-	if (doesOverlap(gr))
+	if (world()->doesOverlap(this, gr))
 	{
 		gr->setHP(gr->getHP() + 10);
 		setDead();
@@ -430,7 +430,7 @@ HolyWaterGoodie::HolyWaterGoodie(StudentWorld* sw, double x, double y)
 
 void HolyWaterGoodie::doActivity(GhostRacer* gr)
 {
-	if (doesOverlap(gr))
+	if (world()->doesOverlap(this, gr))
 	{
 		gr->setSprays(gr->getNumSprays() + 10);
 		setDead();
@@ -446,7 +446,7 @@ SoulGoodie::SoulGoodie(StudentWorld* sw, double x, double y)
 
 void SoulGoodie::doActivity(GhostRacer* gr)
 {	
-	if (doesOverlap(gr))
+	if (world()->doesOverlap(this, gr))
 	{
 		world()->decSoulsToSave();
 		setDead();
@@ -469,16 +469,4 @@ void Actor::moveDependents(double hspeed) //Moves actors dependent on ghost race
 		setDead();
 		return;
 	}
-}
-
-bool Actor::doesOverlap(Actor* object)
-{
-	double delta_x = abs(object->getX() - getX());
-	double delta_y = abs(object->getY() - getY());
-	double radius_sum = object->getRadius() + getRadius();
-
-	if (delta_x < radius_sum * 0.25 && delta_y < radius_sum * 0.6)
-		return true;
-	else
-		return false;
 }

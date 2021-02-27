@@ -217,15 +217,15 @@ void StudentWorld::shouldAddZombCab()
     { 
         switch (*it)
         {
-        case 1:
+        case 1: //Left lane
             if(addCab(LEFT_EDGE, ROAD_CENTER - ROAD_WIDTH/3, LEFT_WHITE_LANE))
                 flag = true;
             break;
-        case 2:
+        case 2: //Middle lane
             if (addCab(LEFT_WHITE_LANE, ROAD_CENTER, RIGHT_WHITE_LANE))
                 flag = true;
             break;
-        case 3:
+        case 3: //Right lane
             if (addCab(RIGHT_WHITE_LANE, ROAD_CENTER + ROAD_WIDTH /3, RIGHT_EDGE))
                 flag = true;
             break;
