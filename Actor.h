@@ -19,9 +19,10 @@ public:
     virtual bool isWhiteBL() const { return false; }
     virtual bool beSprayedIfAppropriate()  { return false; }
     virtual bool isCollisionAvoidanceWorthy() const { return false; }
-    void moveDependents(double hspeed);
     void setDead() { isDeceased = true; }
     StudentWorld* world() const { return m_world; }  
+protected:
+    void moveDependents(double hspeed);
 private:
     double m_Vspeed;
     bool isDeceased;
@@ -46,6 +47,7 @@ public:
     int getHP() const { return m_health; }
     void setHP(int hp)  { m_health = hp; }
     virtual bool takeDamageAndPossiblyDie(int hp);
+protected:
     virtual int scoreOnDeath() const { return 0; }   
     virtual int soundWhenHurt() const { return SOUND_NONE; }
     virtual int soundWhenDie() const { return SOUND_NONE; }
@@ -61,6 +63,7 @@ public:
     int getNumSprays() const { return m_sprays; }
     void setSprays(int amt) { m_sprays = amt; }
     void spin();
+protected:
     virtual int soundWhenHurt() const { return SOUND_NONE; }
     virtual int soundWhenDie() const { return SOUND_PLAYER_DIE; }
 private:
@@ -74,6 +77,7 @@ public:
     double getHspeed() const { return m_Hspeed; }
     void setHspeed(double s) { m_Hspeed = s; }
     void moveAndPossiblyPickPlan();
+protected:
     virtual int soundWhenHurt() const { return SOUND_PED_HURT; }
     virtual int soundWhenDie() const { return SOUND_PED_DIE; }
 private:
@@ -96,6 +100,7 @@ public:
     ZombiePedestrian(StudentWorld* sw, double x, double y);
     virtual bool beSprayedIfAppropriate();
     virtual void doSomething();
+protected:
     virtual int scoreOnDeath() const { return 150; }
 private:
     int m_gruntTicks;
@@ -107,6 +112,7 @@ public:
     ZombieCab(StudentWorld* sw, double x, double y, int startSpeed);
     virtual void doSomething();
     virtual bool beSprayedIfAppropriate();
+protected:
     virtual int soundWhenHurt() const { return SOUND_VEHICLE_HURT; }
     virtual int soundWhenDie() const { return SOUND_VEHICLE_DIE; }
     virtual int scoreOnDeath() const { return 200; }

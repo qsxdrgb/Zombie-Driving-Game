@@ -446,14 +446,14 @@ SoulGoodie::SoulGoodie(StudentWorld* sw, double x, double y)
 
 void SoulGoodie::doActivity(GhostRacer* gr)
 {	
-	if (world()->doesOverlap(this, gr))
+	if (world()->doesOverlap(this, gr)) 
 	{
 		world()->decSoulsToSave();
 		setDead();
 		world()->playSound(SOUND_GOT_SOUL);
 		world()->increaseScore(100);
 	}
-	setDirection(getDirection() - 10);
+	setDirection(getDirection() - 10); //Spin clockwise
 }
 
 void Actor::moveDependents(double hspeed) //Moves actors dependent on ghost racer's speed
