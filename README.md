@@ -1,3 +1,2 @@
 # UCLA-CS32-Project-3
-
-#Read spec
+The skeleton was provided for me. The attached files contain the code that I personally wrote.
